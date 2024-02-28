@@ -73,6 +73,7 @@
 
 #include <AP_Notify/AP_Notify.h>
 #include <AP_Vehicle/AP_Vehicle_config.h>
+#include <AP_ExternalAHRS/AP_ExternalAHRS_config.h>
 
 #include <stdio.h>
 
@@ -4260,6 +4261,12 @@ void GCS_MAVLINK::handle_message(const mavlink_message_t &msg)
         }
         break;
     }
+#endif
+
+#if AP_EXTERNAL_AHRS_INERTIAL_LABS_ENABLED
+    case MAVLINK_MSG_ID_INERTIALLABS_AHRS_COMMAND:
+        send_text(MAV_SEVERITY_INFO, "qweqwe: Inertial Labs AHRS command received!");
+        break;
 #endif
     }
 
