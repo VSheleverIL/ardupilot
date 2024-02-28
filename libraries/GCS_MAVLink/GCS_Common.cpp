@@ -73,7 +73,11 @@
 
 #include <AP_Notify/AP_Notify.h>
 #include <AP_Vehicle/AP_Vehicle_config.h>
-#include <AP_ExternalAHRS/AP_ExternalAHRS_config.h>
+
+#if AP_EXTERNAL_AHRS_INERTIAL_LABS_ENABLED
+#include <AP_ExternalAHRS/AP_ExternalAHRS.h>
+#include <AP_ExternalAHRS/AP_ExternalAHRS_InertialLabs_command.h>
+#endif
 
 #include <stdio.h>
 
@@ -4265,10 +4269,24 @@ void GCS_MAVLINK::handle_message(const mavlink_message_t &msg)
 
 #if AP_EXTERNAL_AHRS_INERTIAL_LABS_ENABLED
     case MAVLINK_MSG_ID_INERTIALLABS_AHRS_COMMAND:
-        send_text(MAV_SEVERITY_INFO, "qweqwe: Inertial Labs AHRS command received!");
-        break;
-#endif
+    {
+        mavlink_inertiallabs_ahrs_command_t packet;
+        mavlink_msg_inertiallabs_ahrs_command_decode(&msg, &packet);
+
+        switch (packet.command_type) {
+            case INERTIALLABS_AHRS_COMMAND_TYPE::INERTIALLABS_AHRS_DISABLE_GNSS:
+                send_text(MAV_SEVERITY_INFO, "DISABLE_GNSS command sent to the Inertial Labs AHRS");
+                AP::externalAHRS().write_bytes(InertialLabs::Command::DISABLE_GNSS, 9);
+                break;
+
+            case INERTIALLABS_AHRS_COMMAND_TYPE::INERTIALLABS_AHRS_ENABLE_GNSS:
+                send_text(MAV_SEVERITY_INFO, "ENABLE_GNSS command sent to the Inertial Labs AHRS");
+                AP::externalAHRS().write_bytes(InertialLabs::Command::ENABLE_GNSS, 9);
+                break;
+        }
     }
+#endif
+    } // switch (msg.msgid)
 
 }
 
