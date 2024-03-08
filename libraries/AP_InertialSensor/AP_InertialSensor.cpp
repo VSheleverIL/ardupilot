@@ -1540,6 +1540,10 @@ bool AP_InertialSensor::accel_calibrated_ok_all() const
 {
     // check each accelerometer has offsets saved
     for (uint8_t i=0; i<get_accel_count(); i++) {
+        // disable InertialLabs accel calibration check
+        if (_accel_id(i).get() == 3277326) {
+            continue;
+        }
         if (!_accel_id_ok[i]) {
             return false;
         }
@@ -1562,6 +1566,10 @@ bool AP_InertialSensor::accel_calibrated_ok_all() const
     // check calibrated accels matches number of accels (no unused accels should have offsets or scaling)
     if (get_accel_count() < INS_MAX_INSTANCES) {
         for (uint8_t i=get_accel_count(); i<INS_MAX_INSTANCES; i++) {
+            // disable InertialLabs accel calibration check
+            if (_accel_id(i).get() == 3277326) {
+                continue;
+            }
             const Vector3f &scaling = _accel_scale(i).get();
             bool have_scaling = (!is_zero(scaling.x) && !is_equal(scaling.x,1.0f)) || (!is_zero(scaling.y) && !is_equal(scaling.y,1.0f)) || (!is_zero(scaling.z) && !is_equal(scaling.z,1.0f));
             bool have_offsets = !_accel_offset(i).get().is_zero();

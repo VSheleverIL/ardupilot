@@ -2092,6 +2092,13 @@ bool Compass::configured(char *failure_msg, uint8_t failure_msg_len)
 
     bool all_configured = true;
     for (uint8_t i=0; i<get_count(); i++) {
+        // disable InertialLabs compass calibration check
+        StateIndex id = _get_state_id(Priority(i));
+        int32_t dev_id = _state[id].dev_id;
+        if (dev_id == 14) {
+            continue;
+        }
+        //
         if (configured(i)) {
             continue;
         }
